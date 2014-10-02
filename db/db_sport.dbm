@@ -1,0 +1,1628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.8.0-alpha1" author="dmt_malin" last-position="0,0" last-zoom="1">
+<database name="db_sport" encoding="UTF8" append-at-eod="true">
+	<appended-sql><![CDATA[INSERT INTO dbo.objects (name, code) VALUES ('status_type', 'ST');
+INSERT INTO dbo.objects (name, code) VALUES ('group_type', 'GR');
+INSERT INTO dbo.objects (name, code) VALUES ('mode_type', 'MD');
+INSERT INTO dbo.objects (name, code) VALUES ('reload_type', 'RL');
+INSERT INTO dbo.objects (name, code) VALUES ('sport_type', 'SP');
+--status
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Активный', 'Active', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'ST' LIMIT 1)) ;
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Отмененный', 'Cancel', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'ST' LIMIT 1)) ;
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('В ожидании', 'Wait', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'ST' LIMIT 1)) ;
+--group
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Общая', 'Common', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'GR' LIMIT 1)) ;
+
+--mode
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Публичный', 'Public', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'MD' LIMIT 1)) ;
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Приватный', 'Private', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'MD' LIMIT 1)) ;
+--reload
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Перегружаемый', 'Reload', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'RL' LIMIT 1)) ;
+INSERT INTO dbo.types (show_name, name, object_id) VALUES ('Неперегружаемый', 'NoReload', (SELECT o.object_id FROM dbo.objects o WHERE o.code = 'RL' LIMIT 1)) ;
+
+--to use django user table
+--ALTER TABLE dbo.events ADD CONSTRAINT fk_auth_user_events_root_user_id FOREIGN KEY (root_user_id)
+--REFERENCES dbo.auth_user (id) MATCH SIMPLE
+--ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--ALTER TABLE dbo.users_events ADD CONSTRAINT fk_auth_user_users_events_user_event_id FOREIGN KEY (user_id)
+--REFERENCES dbo.auth_user (id) MATCH SIMPLE
+--ON DELETE CASCADE ON UPDATE NO ACTION;
+
+---ALTER TABLE dbo.users_groups ADD CONSTRAINT fk_auth_user_users_groups_user_group_id FOREIGN KEY (user_id)
+--REFERENCES dbo.auth_user (id) MATCH SIMPLE
+--ON DELETE CASCADE ON UPDATE NO ACTION;
+
+]]></appended-sql>
+</database>
+
+<schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="dbo" fill-color="#e1e1e1">
+</schema>
+
+<domain name="usually_string" not-null="false">
+	<schema name="dbo"/>
+		<type name="varchar" length="30"/>
+</domain>
+
+<sequence name="auto_user_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false" sql-disabled="true">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="users" sql-disabled="true">
+	<schema name="dbo"/>
+	<position x="36.5" y="27.9808"/>
+	<column name="user_id" not-null="true" sequence="dbo.auto_user_id" sql-disabled="true">
+		<type name="integer"/>
+	</column>
+	<column name="name">
+		<type name="dbo.usually_string"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="dbo.usually_string"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="dbo.usually_string"/>
+	</column>
+	<constraint name="pk_users_user_id" type="pk-constr" factor="100" sql-disabled="true" table="dbo.users">
+		<columns names="user_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="auto_type_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="types">
+	<schema name="dbo"/>
+	<position x="42.6667" y="414.583"/>
+	<column name="type_id" not-null="true" sequence="dbo.auto_type_id">
+		<type name="integer"/>
+	</column>
+	<column name="object_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="show_name">
+		<type name="dbo.usually_string"/>
+	</column>
+	<column name="name">
+		<type name="dbo.usually_string"/>
+	</column>
+	<constraint name="pk_types_type_id" type="pk-constr" factor="100" table="dbo.types">
+		<columns names="type_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<domain name="short_string" not-null="false">
+	<schema name="dbo"/>
+		<type name="varchar" length="10"/>
+</domain>
+
+<sequence name="auto_object_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="objects">
+	<schema name="dbo"/>
+	<position x="44.1072" y="624.548"/>
+	<column name="object_id" not-null="true" sequence="dbo.auto_object_id">
+		<type name="integer"/>
+	</column>
+	<column name="name">
+		<type name="dbo.usually_string"/>
+	</column>
+	<column name="code">
+		<type name="dbo.short_string"/>
+	</column>
+	<constraint name="pk_objects_object_id" type="pk-constr" factor="100" table="dbo.objects">
+		<columns names="object_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="auto_event_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="events">
+	<schema name="dbo"/>
+	<position x="528.071" y="185.941"/>
+	<column name="event_id" not-null="true" sequence="dbo.auto_event_id">
+		<type name="integer"/>
+	</column>
+	<column name="root_user_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="mode_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="status_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="reload_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="name">
+		<type name="dbo.usually_string"/>
+	</column>
+	<column name="date_time" not-null="true">
+		<type name="timestamp" with-timezone="true"/>
+	</column>
+	<column name="date_time_reg" not-null="true">
+		<type name="timestamp" with-timezone="true"/>
+	</column>
+	<constraint name="pk_events_event_id" type="pk-constr" factor="100" table="dbo.events">
+		<columns names="event_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="auto_venue_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<domain name="coordinate" not-null="false">
+	<schema name="dbo"/>
+		<type name="float" length="9" precision="6"/>
+</domain>
+
+<table name="venues">
+	<schema name="dbo"/>
+	<position x="436.87" y="615.631"/>
+	<column name="venue_id" not-null="true" sequence="dbo.auto_venue_id">
+		<type name="integer"/>
+	</column>
+	<column name="sport_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="group_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="name">
+		<type name="dbo.usually_string"/>
+	</column>
+	<column name="latitude_degree" not-null="true">
+		<type name="dbo.coordinate"/>
+	</column>
+	<column name="longitude_degree" not-null="true">
+		<type name="dbo.coordinate"/>
+	</column>
+	<constraint name="pk_venues_venue_id" type="pk-constr" factor="100" table="dbo.venues">
+		<columns names="venue_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="auto_user_event_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="users_events">
+	<schema name="dbo"/>
+	<position x="527.381" y="25.5238"/>
+	<column name="user_event_id" not-null="true" sequence="dbo.auto_user_event_id">
+		<type name="integer"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="event_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="status_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<constraint name="pk_users_events_user_event_id" type="pk-constr" factor="100" table="dbo.users_events">
+		<columns names="user_event_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="auto_venue_event_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="venues_events">
+	<schema name="dbo"/>
+	<position x="555.333" y="469.571"/>
+	<column name="venue_event_id" not-null="true" sequence="dbo.auto_venue_event_id">
+		<type name="integer"/>
+	</column>
+	<column name="venue_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="event_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<constraint name="pk_venues_events_venue_event_id" type="pk-constr" factor="100" table="dbo.venues_events">
+		<columns names="venue_event_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<function name="user_add" sql-disabled="true"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="integer"/>
+	</return-type>
+	<parameter name="v_name" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="v_email" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="v_password" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<definition><![CDATA[--функция регистрирует пользователя
+--Вх.:
+--v_name - отображаемое имя пользователя
+--v_email - email (логин)
+--v_password - пароль
+--Вых.:
+--0 - пользователь с таким email существует
+--number - пользователь зарегестрирован с id
+--NULL - один из входных параметров NULL
+DECLARE 
+ v_result int; 
+ v_user_group_id int;
+ v_common_group_type_id int;
+BEGIN 
+ v_result := 0;
+ IF (NOT EXISTS (
+  SELECT u.user_id  
+  FROM dbo.users u
+  WHERE u.email = v_email
+  LIMIT 1 )) THEN  
+   INSERT INTO dbo.users (name, email, password)
+   VALUES (v_name, v_email, v_password);   
+   
+   SELECT currval('dbo.auto_user_id') INTO v_result;
+
+    --Добавляем пользователя в группу по-умолчанию Common
+   SELECT dbo.type_get_id('Common', 'GR') INTO v_common_group_type_id;
+   SELECT dbo.user_add_group(v_common_group_type_id, v_result) INTO v_user_group_id;
+   
+   IF(v_user_group_id = 0 OR v_user_group_id IS NULL) THEN    
+    RAISE EXCEPTION 'cannot write to users_groups';
+   END IF;
+   
+ END IF;
+ RETURN v_result;
+END;]]></definition>
+</function>
+
+<function name="user_log" sql-disabled="true"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="integer"/>
+	</return-type>
+	<parameter name="v_email" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="v_password" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<definition><![CDATA[--функция идентифицирует пользователя (логин)
+--Вх.:
+--v_email - email (логин)
+--v_password - пароль
+--Вых.:
+--0 - пользователь или пароль не верны
+--number - пользователь идентифицирован
+DECLARE v_result int;
+BEGIN
+ SELECT u.user_id 
+ INTO v_result
+ FROM dbo.users u
+ WHERE (
+  u.email = v_email AND
+  u.password = v_password);
+ IF (v_result IS NULL) THEN
+  v_result := 0; 
+ END IF;   
+ RETURN v_result;
+END;]]></definition>
+</function>
+
+<function name="type_get_id"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="integer"/>
+	</return-type>
+	<parameter name="v_name" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="v_code" in="true">
+		<type name="dbo.short_string"/>
+	</parameter>
+	<definition><![CDATA[--функция ищет type_id по имени и коду объекта
+--Вх.:
+--v_name - имя типа
+--v_code - код типа
+--Вых.:
+--number - type_id найден
+--NULL - не найден
+DECLARE v_type_id int;
+BEGIN
+ SELECT t.type_id
+ INTO v_type_id
+ FROM dbo.types t
+ INNER JOIN dbo.objects o ON t.object_id = o.object_id
+ WHERE (
+  t.name = v_name AND
+  o.code = v_code )
+ LIMIT 1;
+ RETURN v_type_id;
+END;]]></definition>
+</function>
+
+<sequence name="auto_user_group_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="users_groups">
+	<schema name="dbo"/>
+	<position x="56.881" y="218.643"/>
+	<column name="user_group_id" not-null="true" sequence="dbo.auto_user_group_id">
+		<type name="integer"/>
+	</column>
+	<column name="group_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<constraint name="pk_users_groups_user_group_id" type="pk-constr" factor="100" table="dbo.users_groups">
+		<columns names="user_group_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="auto_photo_id"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="dbo"/>
+</sequence>
+
+<table name="photos">
+	<schema name="dbo"/>
+	<position x="860.141" y="560.993"/>
+	<column name="photo_id" not-null="true" sequence="dbo.auto_photo_id">
+		<type name="integer"/>
+	</column>
+	<column name="venue_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="photo" not-null="true">
+		<type name="bytea"/>
+	</column>
+	<constraint name="photos_photo_id" type="pk-constr" factor="100" table="dbo.photos">
+		<columns names="photo_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="ix_users_name" table="dbo.users"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0" sql-disabled="true">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="name"/>
+		</idxelement>
+</index>
+
+<index name="ix_users_email" table="dbo.users"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0" sql-disabled="true">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="email"/>
+		</idxelement>
+</index>
+
+<index name="ix_types_name" table="dbo.types"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="name"/>
+		</idxelement>
+</index>
+
+<index name="ix_objects_code" table="dbo.objects"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="code"/>
+		</idxelement>
+</index>
+
+<function name="user_add_group" sql-disabled="true"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="integer"/>
+	</return-type>
+	<parameter name="v_group_type_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--функция добавляет пользователя к указанной группе
+--Вх.:
+--v_group_type_id - id группы из таблицы types
+--user_id - id пользователя
+DECLARE v_result int;
+BEGIN
+ v_result := 0; 
+ INSERT INTO dbo.users_groups(group_type_id, user_id)
+ VALUES (v_group_type_id, v_user_id);
+ SELECT currval('dbo.auto_user_group_id') INTO v_result;  
+ RETURN v_result;
+END;]]></definition>
+</function>
+
+<function name="user_get_groups"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="group_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="show_name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--возвращает группы в которых состоит пользователь
+--Вх.:
+--v_user_id - id пользователя
+BEGIN
+ RETURN QUERY
+ SELECT
+	t.type_id,
+	t.name,
+	t.show_name		
+  FROM dbo.users_groups u_g
+  INNER JOIN dbo.types t ON u_g.group_type_id = t.type_id
+  WHERE u_g.user_id = v_user_id
+  ORDER BY t.show_name ASC;
+END;
+
+]]></definition>
+</function>
+
+<function name="types_get"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_code" in="true">
+		<type name="dbo.short_string"/>
+	</parameter>
+	<definition><![CDATA[--функция возвращает все типы по коду объекта
+--Вх.:
+--v_code - код типа
+BEGIN
+ RETURN QUERY
+ SELECT t.type_id, t.show_name
+ FROM dbo.types t
+ INNER JOIN dbo.objects o ON t.object_id = o.object_id
+ WHERE o.code = v_code
+ ORDER BY t.show_name ASC;
+END;]]></definition>
+</function>
+
+<function name="venue_add" sql-disabled="true"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="integer"/>
+	</return-type>
+	<parameter name="v_sport_type_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_group_type_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_name" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="v_latitude_degree" in="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="v_longitude_degree" in="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="v_photo_bytes" in="true" default-value="NULL">
+		<type name="bytea"/>
+	</parameter>
+	<definition><![CDATA[--Добавляет площадку мероприятия
+--Вх.:
+--v_sport_type_id - id типа спорта
+--v_group_type_id  -id типа группы
+--v_name - отображаемое имя площадки
+--v_latitude_degree - широта в градусах
+--v_longitude_degree долгота в градусах
+DECLARE
+ v_result int; 
+BEGIN
+ v_result := 0;
+ INSERT INTO dbo.venues(
+	sport_type_id,
+	group_type_id,
+	name,
+	latitude_degree,
+	longitude_degree)
+ VALUES (
+	v_sport_type_id,
+	v_group_type_id,
+	v_name,
+	v_latitude_degree,
+	v_longitude_degree);
+  
+ SELECT currval('dbo.auto_venue_id') INTO v_result;
+  
+ IF(v_photo_bytes IS NOT NULL) THEN
+  INSERT INTO dbo.photos(venue_id, photo)
+  VALUES (v_result, v_photo_bytes);
+ END IF; 
+
+ RETURN v_result;
+END;]]></definition>
+</function>
+
+<index name="ix_venues_latitude_degree" table="dbo.venues"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="latitude_degree"/>
+		</idxelement>
+</index>
+
+<index name="ix_venues_longitude_degree" table="dbo.venues"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="longitude_degree"/>
+		</idxelement>
+</index>
+
+<function name="venues_get"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="venue_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="sport_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="sport_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="group_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="group_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="latitude">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="longitude">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="photo">
+		<type name="bytea"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_sport_type_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_lat_degree" in="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="v_lng_degree" in="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="v_radius_km" in="true" default-value="5">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--Получает площадки мероприятия по типу спорта и удаленности от текущего местоположения
+--Вх.:
+--v_sport_type_id - id типа спорта
+--v_lat_degree, v_lng_degree - широта и долгота текущего местоположения
+--v_radius_km - радиус удаленности поиска площадок в км
+DECLARE
+ v_lat_min_degree dbo.coordinate;
+ v_lat_max_degree dbo.coordinate;
+ v_lng_min_degree dbo.coordinate;
+ v_lng_max_degree dbo.coordinate;
+BEGIN 
+ SELECT
+	lat_min_degree,
+	lat_max_degree,
+	lng_min_degree,
+	lng_max_degree 
+ FROM dbo.equal_bounds_radian(
+	v_lat_degree,
+	v_lng_degree,
+	v_radius_km)
+ INTO
+	v_lat_min_degree,
+	v_lat_max_degree,
+	v_lng_min_degree,
+	v_lng_max_degree;
+ 
+ RETURN QUERY
+ SELECT 
+  v.venue_id,
+  sp.type_id,
+  sp.show_name,
+  gr.type_id,
+  gr.show_name,
+  v.name,
+  v.latitude_degree,
+  v.longitude_degree,
+  p.photo
+ FROM dbo.venues v
+ LEFT OUTER JOIN dbo.photos p ON v.venue_id = p.venue_id
+ LEFT OUTER JOIN dbo.types sp ON v.sport_type_id = sp.type_id
+ LEFT OUTER JOIN dbo.types gr ON v.group_type_id = gr.type_id 
+ WHERE 
+  v.sport_type_id = v_sport_type_id AND
+  (v.latitude_degree >= v_lat_min_degree AND v.latitude_degree <= v_lat_max_degree) AND
+  (v.longitude_degree >= v_lng_min_degree AND v.longitude_degree <= v_lng_max_degree);
+END;]]></definition>
+</function>
+
+<function name="equal_bounds_radian"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="record"/>
+	</return-type>
+	<parameter name="lat_degree" in="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="lng_degree" in="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="radius_km" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="lat_min_degree" out="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="lat_max_degree" out="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="lng_min_degree" out="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<parameter name="lng_max_degree" out="true">
+		<type name="dbo.coordinate"/>
+	</parameter>
+	<definition><![CDATA[--функция вычисляет границы местоположения
+--Вх.:
+--lat_degree, lng_degree - широта и долгота от которых ведется поиск границ
+--radius_km - удаленность поиска в км
+--Вых.:
+--lat_min_degree, lat_max_degree - минимум и максимум границ по широте
+--lng_min_degree, lng_max_degree - минимум и максимум границ по долготе
+DECLARE
+ r float;  
+ lat_radian float;
+ lng_radian float;
+ delta_lng float;
+BEGIN
+ r := radius_km / 6371.0;
+ --перевод из градусов в радианы
+ lat_radian := radians(lat_degree);
+ lng_radian := radians(lng_degree);
+ --нахождение границ по широте (градусы)
+ lat_min_degree := degrees(lat_radian - r);
+ lat_max_degree := degrees(lat_radian + r); 
+ --нахождение границ по долготе (градусы)
+ delta_lng := asin(sin(r)/cos(lat_radian));
+ lng_min_degree := degrees(lng_radian - delta_lng);
+ lng_max_degree := degrees(lng_radian + delta_lng);
+END;]]></definition>
+</function>
+
+<function name="events_get"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="event_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="root_user">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="mode_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="mode_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="status_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="status_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="reload_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="reload_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="date_time">
+		<type name="timestamptz"/>
+	</parameter>
+	<parameter name="date_time_reg">
+		<type name="timestamptz"/>
+	</parameter>
+	<parameter name="users_count">
+		<type name="integer"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_venue_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--функция возвращает актуальный список мероприятий на площадку
+--Вх.:
+--v_venue_id - id площадки
+DECLARE
+ v_active_status_type_id int;
+BEGIN
+ SELECT dbo.type_get_id('Active' ,'ST') INTO v_active_status_type_id;
+ RETURN QUERY
+ SELECT 
+	e.event_id,
+	--u.name,
+	u.username,
+	mt.type_id,
+	mt.show_name,
+	st.type_id,
+	st.show_name,
+	rt.type_id,
+	rt.show_name,
+	e.name,
+	e.date_time,
+	e.date_time_reg,
+	count(active.user_id) :: integer		
+ FROM dbo.venues_events ve
+ INNER JOIN dbo.events e ON ve.event_id = e.event_id 
+ --INNER JOIN dbo.users u ON e.root_user_id = u.user_id
+ INNER JOIN dbo.auth_user u ON e.root_user_id = u.id
+ INNER JOIN dbo.types mt ON e.mode_type_id  =mt.type_id
+ INNER JOIN dbo.types st ON e.status_type_id = st.type_id
+ INNER JOIN dbo.types rt ON e.reload_type_id = rt.type_id
+ LEFT OUTER JOIN (
+ 	SELECT 
+    		ue.user_event_id,
+		ue.user_id,
+		ue.event_id,
+		ue.status_type_id
+	FROM dbo.users_events ue
+	WHERE ue.status_type_id = v_active_status_type_id) active
+		ON e.event_id = active.event_id
+ WHERE
+	ve.venue_id = v_venue_id AND
+ 	e.date_time >= CURRENT_TIMESTAMP
+ GROUP BY
+	e.event_id,
+	--u.name,
+	u.username,
+	mt.type_id,
+	mt.show_name,
+	st.type_id,
+	st.show_name,
+	rt.type_id,
+	rt.show_name,
+	e.name,
+	e.date_time,
+	e.date_time_reg
+ ORDER BY
+	e.date_time DESC;
+END;]]></definition>
+</function>
+
+<function name="users_event_get"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="user_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_event_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--функция возвращает список пользователей, участвующих в мероприятии
+--Вх.:
+--v_event_id - id мероприятия
+DECLARE
+ v_active_status_type_id int;
+BEGIN
+ SELECT dbo.type_get_id('Active' ,'ST') INTO v_active_status_type_id;
+ RETURN QUERY
+ SELECT u.id, u.username
+ --SELECT u.user_id, u.name
+ FROM dbo.users_events ue
+ --INNER JOIN dbo.users u ON ue.user_id = u.user_id
+ INNER JOIN dbo.auth_user u ON ue.user_id = u.id
+ WHERE ue.event_id = v_event_id AND ue.status_type_id = v_active_status_type_id
+ --ORDER BY u.name ASC;
+ ORDER BY u.username ASC;
+END;]]></definition>
+</function>
+
+<function name="user_event_add"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="record"/>
+	</return-type>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_event_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_result" out="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_message" out="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<definition><![CDATA[--Функция регистрирует пользователя на мероприятие
+--Вх.:
+--v_user_id - id пользователя
+--v_event_id - id мероприятия
+--Вых.:
+--v_result - 0 - пользователь не был зарегистрирован / 1 - регистрация одобрена (отправлена заяка на участие)
+--v_message - сообщение о результате выполнения
+DECLARE
+ v_active_status_type_id int;
+ v_wait_status_type_id int;
+ v_public_mode_type_id int;
+BEGIN
+ v_result := 0;
+ --если пользователь подписан/подал заявку на событие
+ IF(EXISTS (
+	SELECT ue.user_event_id
+	FROM dbo.users_events ue
+	WHERE ue.user_id = v_user_id AND ue.event_id = v_event_id
+	LIMIT 1)) THEN
+  v_message := 'Заявка существует ';
+  RETURN;
+ END IF;  
+ --если пользователь подписывается на событие, котрое сам и создал
+ IF(EXISTS (
+	SELECT e.event_id
+	FROM dbo.events e
+	WHERE  e.event_id = v_event_id and e.root_user_id = v_user_id
+	LIMIT 1)) THEN
+  v_message := 'Владелец события';
+  RETURN;
+ END IF;
+ --если событие не имеет статус "Активный"
+ SELECT dbo.type_get_id('Active' ,'ST') INTO v_active_status_type_id;
+ IF (NOT EXISTS (
+	SELECT e.event_id 
+	FROM dbo.events e
+	WHERE e.event_id = v_event_id AND e.status_type_id = v_active_status_type_id
+	LIMIT 1)) THEN
+  v_message := 'Событие отменено';
+  RETURN;
+ END IF;
+ --если событие имеет режим "Публичный"
+ SELECT dbo.type_get_id('Public', 'MD') INTO v_public_mode_type_id;
+ IF(EXISTS (
+	SELECT e.event_id 
+	FROM dbo.events e
+	WHERE e.event_id = v_event_id AND e.mode_type_id = v_public_mode_type_id
+	LIMIT 1)) THEN
+    --регистрируем пользователя на событие со статусом "Активный"
+  INSERT INTO dbo.users_events (user_id, event_id, status_type_id)
+  VALUES (v_user_id, v_event_id, v_active_status_type_id);
+
+  v_message := 'Заявка одобрена';
+ ELSE 
+  --подаем заявку на участие в мероприятии
+  SELECT dbo.type_get_id('Wait', 'ST') INTO v_wait_status_type_id;
+  INSERT INTO dbo.users_events (user_id, event_id, status_type_id)
+  VALUES (v_user_id, v_event_id, v_wait_status_type_id); 
+
+  v_message := 'Заяка принята';
+ END IF;
+ SELECT currval('dbo.auto_user_event_id') INTO v_result; 
+END;]]></definition>
+</function>
+
+<function name="user_events_get"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="event_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="root_user_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="root_user">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="mode_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="mode_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="status_type_event_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="status_type_event">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="status_type_user_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="status_type_user">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="reload_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="reload_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="date_time">
+		<type name="timestamptz"/>
+	</parameter>
+	<parameter name="date_time_reg">
+		<type name="timestamptz"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_limit" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--Функция возвращает мероприятия с которыми пользователь взаимодействовал
+--Вх.:
+--user_id - id пользователя
+--v_limit - кол-во возвращаемых записей
+BEGIN 
+ RETURN QUERY
+ SELECT 
+	e.event_id,
+	--u.user_id,
+	--u.name,
+	u.id,
+	u.username,
+	mt.type_id,
+	mt.show_name,
+	st_e.type_id,
+	st_e.show_name,
+	st_u.type_id,
+	st_u.show_name,
+	rt.type_id,
+	rt.show_name,
+	e.name,
+	e.date_time,
+	e.date_time_reg			
+ FROM dbo.users_events ue
+ INNER JOIN dbo.events e ON ue.event_id = e.event_id 
+ --INNER JOIN dbo.users u ON e.root_user_id = u.user_id
+ INNER JOIN dbo.auth_user u ON e.root_user_id = u.id
+ INNER JOIN dbo.types mt ON e.mode_type_id  =mt.type_id
+ INNER JOIN dbo.types st_e ON e.status_type_id = st_e.type_id 
+ INNER JOIN dbo.types rt ON e.reload_type_id = rt.type_id
+ INNER JOIN dbo.types st_u ON ue.status_type_id = st_u.type_id 
+ WHERE ue.user_id = v_user_id
+ ORDER BY e.date_time DESC
+ LIMIT v_limit; 
+END;]]></definition>
+</function>
+
+<index name="ix_users_password" table="dbo.users"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0" sql-disabled="true">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="password"/>
+		</idxelement>
+</index>
+
+<index name="ix_types_show_name" table="dbo.types"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="show_name"/>
+		</idxelement>
+</index>
+
+<function name="event_add"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="record"/>
+	</return-type>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_venue_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_mode_type_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_reload_type_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_name" in="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="v_date_time" in="true">
+		<type name="timestamptz"/>
+	</parameter>
+	<parameter name="v_result" out="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_message" out="true">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<definition><![CDATA[--Добавление мероприятия к площадке
+--Вх.:
+--v_user_id - id пользователя
+--v_venue_id - id площадки
+--v_mode_type_id -id режима мероприятия (публичный.приватный)
+--v_reload_type_id -id режима перегружаемый/неперегружаемый
+--v_name - имя мероприятия
+--v_date_time - дата/время проведения
+--Вых.:
+--v_result -  0 - не зарегистрировано/ 1 - зарегистрировано
+--v_message - сообщение о результате выполнения
+DECLARE
+ v_active_status_type_id int; 
+BEGIN
+ v_result := 0; 
+ --Мероприятие не может быть зарегестрировано на прошедшее время
+ IF(v_date_time <= CURRENT_TIMESTAMP) THEN
+  v_message := 'Дата и время некоректны';
+  RETURN;
+ END IF;
+ --Если событие на данную площадку существует
+ IF(EXISTS (
+	SELECT *
+	FROM dbo.venues_events ve
+	INNER JOIN dbo.events e ON ve.event_id = e.event_id
+	WHERE
+	ve.venue_id = v_venue_id AND
+	e.date_time = v_date_time AND
+	e.name = v_name)) THEN
+
+  v_message := 'Событие существует';
+  RETURN;
+ END IF;
+ SELECT dbo.type_get_id('Active' ,'ST') INTO v_active_status_type_id;
+ --Если пользователь  может создавать мероприятия на площадку
+ IF(EXISTS (
+	SELECT ug.user_group_id
+	FROM dbo.users_groups ug
+	INNER JOIN dbo.types t ON ug.group_type_id = t.type_id
+	INNER JOIN dbo.venues v ON t.type_id = v.group_type_id
+	WHERE ug.user_id = v_user_id AND v.venue_id = v_venue_id
+	LIMIT 1)) THEN
+ --Записываем событие
+ INSERT INTO dbo.events (
+	root_user_id,
+	mode_type_id,
+	status_type_id,
+	reload_type_id,
+	name,
+	date_time,
+	date_time_reg)
+  VALUES (
+	v_user_id,
+	v_mode_type_id,
+	v_active_status_type_id,
+	v_reload_type_id,
+	v_name,
+	v_date_time,
+	CURRENT_TIMESTAMP);  
+
+  SELECT currval('dbo.auto_event_id') INTO v_result;
+  
+  INSERT INTO dbo.venues_events (venue_id, event_id)
+  VALUES (v_venue_id, v_result);  
+  v_message := 'Событие добавлено' ;
+  
+ ELSE
+  v_message := 'Нет прав на добавление';	
+ END IF;	
+END;]]></definition>
+</function>
+
+<index name="ix_events_name" table="dbo.events"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="name"/>
+		</idxelement>
+</index>
+
+<index name="ix_events_date_time" table="dbo.events"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="false">
+			<column name="date_time"/>
+		</idxelement>
+</index>
+
+<index name="ix_events_date_time_reg" table="dbo.events"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="false">
+			<column name="date_time_reg"/>
+		</idxelement>
+</index>
+
+<function name="user_requests_get"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<parameter name="user_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="user_name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="mode_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="mode_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="status_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="status_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="reload_type_id">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="reload_type">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="name">
+		<type name="dbo.usually_string"/>
+	</parameter>
+	<parameter name="date_time">
+		<type name="timestamptz"/>
+	</parameter>
+	<parameter name="date_time_reg">
+		<type name="timestamptz"/>
+	</parameter>
+	</return-type>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_limit" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--Функция возвращает запросы на подтверждение об участии в мероприятии
+DECLARE
+ v_wait_status_type_id int;
+BEGIN
+ SELECT dbo.type_get_id('Wait', 'ST') INTO v_wait_status_type_id;
+ RETURN QUERY
+ SELECT 
+	--u.user_id,
+	--u.name,
+	u.id,
+	u.username
+	mt.type_id,
+	mt.show_name,
+	st.type_id,
+	st.show_name,
+	rt.type_id,
+	rt.show_name,
+	e.name,
+	e.date_time,
+	e.date_time_reg
+ FROM dbo.events e
+ INNER JOIN dbo.users_events ue ON e.event_id = ue.event_id
+ --INNER JOIN dbo.users u ON ue.user_id = u.user_id
+ INNER JOIN dbo.auth_user u ON ue.user_id = u.id
+ INNER JOIN dbo.types mt ON e.mode_type_id = mt.type_id
+ INNER JOIN dbo.types st ON e.status_type_id = st.type_id
+ INNER JOIN dbo.types rt ON e.reload_type_id = rt.type_id
+ WHERE e.root_user_id  = v_user_id AND ue.status_type_id = v_wait_status_type_id
+ ORDER BY e.date_time DESC
+ LIMIT v_limit;
+END;]]></definition>
+</function>
+
+<function name="user_request_active_cancel"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="dbo"/>
+	<language name="plpgsql" protected="true" sql-disabled="true"/>
+	<return-type>
+	<type name="integer"/>
+	</return-type>
+	<parameter name="v_user_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_event_id" in="true">
+		<type name="integer"/>
+	</parameter>
+	<parameter name="v_active_cancel_flag" in="true">
+		<type name="integer"/>
+	</parameter>
+	<definition><![CDATA[--Функция отклоняет или принимает запрос на присоединение к мероприятию
+--Вх.:
+--v_user_id -id  пользователя
+--v_event_id- id мероприятия
+--v_active_cancel_flag - флаг, указывающий на присоединение (1) или отклонение (0) запроса
+--Вых.:
+--v_result - 1 - успешно, 0 - v_active_cancel_flag - отличный от 0 или от 1
+--Функция отклоняет или принимает запрос на присоединение к мероприятию
+DECLARE
+ v_result int;
+ v_status_type_id int;
+BEGIN 
+ v_result := 0;
+ IF (v_active_cancel_flag = 1) THEN
+  SELECT dbo.type_get_id('Active' ,'ST') INTO v_status_type_id;  
+ ELSIF (v_active_cancel_flag = 0) THEN
+  SELECT dbo.type_get_id('Cancel' ,'ST') INTO v_status_type_id;
+ ELSE
+  RETURN v_result;
+ END IF;
+ UPDATE dbo.users_events
+ SET status_type_id = v_status_type_id
+ WHERE user_id = v_user_id and event_id = v_event_id;
+ 
+ SELECT currval('dbo.auto_user_event_id') INTO v_result;
+ 
+ RETURN v_result;
+END;]]></definition>
+</function>
+
+<constraint name="fk_objects_types_object_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.objects" table="dbo.types">
+	<columns names="object_id" ref-type="src-columns"/>
+	<columns names="object_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_events_status_type_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.types" table="dbo.events">
+	<columns names="status_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_events_reload_type_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.types" table="dbo.events">
+	<columns names="reload_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_events_type_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.types" table="dbo.events">
+	<columns names="mode_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_users_events_root_user_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.users" sql-disabled="true" table="dbo.events">
+	<columns names="root_user_id" ref-type="src-columns"/>
+	<columns names="user_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_venues_type_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="dbo.types" table="dbo.venues">
+	<columns names="sport_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_venues_group_type_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.types" table="dbo.venues">
+	<columns names="group_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_users_users_events_user_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.users" sql-disabled="true" table="dbo.users_events">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="user_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_events_users_events_event_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.events" table="dbo.users_events">
+	<columns names="event_id" ref-type="src-columns"/>
+	<columns names="event_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_users_events_status_type_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.types" table="dbo.users_events">
+	<columns names="status_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_venues_venues_events_event_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.venues" table="dbo.venues_events">
+	<columns names="venue_id" ref-type="src-columns"/>
+	<columns names="venue_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_events_venues_events_event_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.events" table="dbo.venues_events">
+	<columns names="event_id" ref-type="src-columns"/>
+	<columns names="event_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_types_users_groups_group_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.types" table="dbo.users_groups">
+	<columns names="group_type_id" ref-type="src-columns"/>
+	<columns names="type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_users_users_groups_user_id" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.users" sql-disabled="true" table="dbo.users_groups">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="user_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_venues_photos_venue_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="dbo.venues" table="dbo.photos">
+	<columns names="venue_id" ref-type="src-columns"/>
+	<columns names="venue_id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_events_types" type="relfk"
+	 src-table="dbo.events"
+	 dst-table="dbo.types"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_types_objects" type="relfk"
+	 src-table="dbo.types"
+	 dst-table="dbo.objects"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_users_events_users" type="relfk"
+	 src-table="dbo.users_events"
+	 dst-table="dbo.users"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-1.09978" y="-12.2"/>
+	</label>
+</relationship>
+
+<relationship name="rel_users_events_events" type="relfk"
+	 src-table="dbo.users_events"
+	 dst-table="dbo.events"
+	 src-required="false" dst-required="false">
+	<label ref-type="dst-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="rel_venues_types" type="relfk"
+	 src-table="dbo.venues"
+	 dst-table="dbo.types"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_venues_events_venues" type="relfk"
+	 src-table="dbo.venues_events"
+	 dst-table="dbo.venues"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-0.599777" y="-14.1999"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="3.21016" y="0.300089"/>
+	</label>
+</relationship>
+
+<relationship name="rel_venues_events_events" type="relfk"
+	 src-table="dbo.venues_events"
+	 dst-table="dbo.events"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="rel_users_groups_types" type="relfk"
+	 src-table="dbo.users_groups"
+	 dst-table="dbo.types"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_users_groups_users" type="relfk"
+	 src-table="dbo.users_groups"
+	 dst-table="dbo.users"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_photos_venues" type="relfk"
+	 src-table="dbo.photos"
+	 dst-table="dbo.venues"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_events_users" type="relfk"
+	 src-table="dbo.events"
+	 dst-table="dbo.users"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_users_events_types" type="relfk"
+	 src-table="dbo.users_events"
+	 dst-table="dbo.types"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>
