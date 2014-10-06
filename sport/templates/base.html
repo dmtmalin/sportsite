@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Sport</title>
+	<title>Sport</title>		
+	{% block head %}{% endblock %}
+</head>
+<body>
 	<div style="position:absolute; top:0; right:0;">
 		{% if user.is_authenticated %}
 			<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Выйти.</a></p>
 		{% else %}
 			<p>Welcome, new user. Please <a href="/sport/login">log in</a>.</p>
 		{% endif %}
-	</div>
-	{% block head %}{% endblock %}
-</head>
-<body>
+	</div>	
 	{% block content %}{% endblock %}
 </body>
 </html>
