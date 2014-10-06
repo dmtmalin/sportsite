@@ -36,7 +36,7 @@ class Object(models.Model):
     class Meta:
         managed = False
         db_table = 'objects'
-    def __unicode__(self):  
+    def __str__(self):  
         return self.name
 
 #class Photo(models.Model):
@@ -55,7 +55,7 @@ class Type(models.Model):
     class Meta:
         managed = False
         db_table = 'types'
-    def __unicode__(self):  
+    def __str__(self):  
         return self.name
 
 #class UsersEvent(models.Model):
@@ -74,7 +74,7 @@ class UsersGroup(models.Model):
     class Meta:
         managed = False
         db_table = 'users_groups'
-    def __unicode__(self):        
+    def __str__(self):        
         user = User.objects.filter(id=self.user_id).values('username')[:1][0].get('username', None)
         group = Type.objects.filter(type_id = self.group_type_id).values('name')[:1][0].get('name', None)
         return  "%s - %s" % (user, group)
@@ -89,7 +89,7 @@ class Venue(models.Model):
     class Meta:
         managed = False
         db_table = 'venues'
-    def __unicode__(self):  
+    def __str__(self):  
         return self.name
 
 #class VenuesEvent(models.Model):
