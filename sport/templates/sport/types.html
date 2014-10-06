@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>	
+	<script type="text/javascript">
+		//выбор города
+		$(function(){
+			$.get('/sport/city', { city_id: $("#cities").val() } );
+
+			$("#cities").on("change", function(){
+				$.get('/sport/city', { city_id: this.value } );
+			});
+		});
+	</script>
+</head>
+<body>
+<select id="cities">
+	{% for city in cities %}
+		{% if city.city_id == curr_city_id  %}
+			<option selected="selected" value="{{ city.city_id }}">{{ city.name }}</option>
+		{% else %}
+			<option value="{{ city.city_id }}">{{ city.name }}</option>
+		{% endif %}
+		
+	{% endfor %}
+</select>
+{% for type in types %}
+	<h1><a href="map?sport_type_id={{ type.type_id}}">{{ type.name }}</a></h1>
+	<hr/>
+{% endfor %}
+</body>
+</html>
