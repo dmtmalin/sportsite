@@ -4,23 +4,60 @@
 	<title>Sport</title>
 	<style type="text/css">		
 		#topbar {
-			position: absolute;
-			top: 0;
-			right: 0;
-			z-index: 1; }
+			background-color: #888;
+			height: 40px;
+			width: 100%; 
+
+		}
+		#bottombar {
+			background-color: #888;
+			height: 40px;
+			width: 100%;
+		}
+
+		.top-nav {
+			list-style-type: none;
+			padding: 0px;
+			margin: 0px;
+			padding-top: 10px;
+		}
+		
+		.top-nav li {
+			display: inline;
+			padding-left: 14px;
+		}
+
+		.right {
+			float: right;
+		}
+
+		.top-nav .left {
+			float: left;
+		}
 	</style>		
 	{% block head %}{% endblock %}
 </head>
 <body>
 	<div id="topbar">
 		{% if user.is_authenticated %}
-			<p><a href="/sport/events">My event</a></p>
-			<p><a href="/sport/regvenues">Registration event</a></p>
-			<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Log out.</a></p>
+			<ul class="top-nav right">
+				<li>Welcome, {{ user.username }}. <a href="/sport/logout_view">Log out.</a></li>
+			</ul>
+			<ul class="top-nav left">
+				<li><a href="/sport/events">My event</a></li>
+				<li><a href="/sport/regvenues">Registration event</a></li>
+			</ul>
 		{% else %}
-			<p>Welcome, new user. Please <a href="/sport/login">log in</a>.</p>
+			<ul class="top-nav right">
+				<li>Welcome, new user. Please <a href="/sport/login">log in</a>.</li>
+			</ul>
 		{% endif %}
-	</div>	
+	</div>
+	<div id="content">
 	{% block content %}{% endblock %}
+	</div>	
+	<div id="bottombar">
+		All rights reserved &copy; <b>Sport</b>
+	</div>
 </body>
 </html>
