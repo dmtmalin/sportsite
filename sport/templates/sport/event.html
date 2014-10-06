@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<table>
+	<tr>
+		<td>date_time</td>
+		<td>name</td>
+		<td>root_user</td>
+		<td>mode</td>
+		<td>status</td>
+	</tr>
+	{% for event in events %}
+	<tr>
+		<td>{{ event.datetime }}</td>
+		<td>{{ event.name }}</td>
+		<td>{{ event.root_user.username }}</td>
+		<td>{{ event.mode.show }}</td>
+		<td>{{ event.status.show }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}

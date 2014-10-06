@@ -4,22 +4,22 @@ from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import logout, authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from sport.forms import UserForm
-from sport.models import City, Sport, Venue
+from sport.models import City, Sport, Venue, UserEvent, Event, UserGroup, Group
 
 # Create your views here.
 def home(request):
 	sports = Sport.objects.all(
 		).values('sport_id', 'show'
-		).order_by('-show')
+		).order_by('show')
 
 	cities = City.objects.all(
 		).values('city_id', 'name'
-		).order_by('-name')
+		).order_by('name')
 
 	city_id = request.session.get('city_id', 0)
 	if city_id == '':
 		city_id = '0'	
-	context = { 'sports': sports, 'cities': cities,  'city_id': city_id }
+	context = { 'sports': sports, 'cities': cities,  'city_id': int(city_id) }
 	return render(request, 'home.html', context);
 
 def city(request):
@@ -30,13 +30,30 @@ def map(request):
 	city = City.objects.filter(city_id = request.session.get('city_id', 0)
 		).values('latitude', 'longitude')[:1]
 
-	venues = Venue.objects.select_related(
-		).filter(city_id = request.session.get('city_id', 0)
+	venues = Venue.objects.filter(city_id = request.session.get('city_id', 0)
 		).filter(sport_id = request.GET.get('sport_id', 0)
 		).values('venue_id', 'name', 'latitude', 'longitude')
 	
 	context = { 'city': city[0], 'venues': venues }	
 	return render(request, 'sport/map.html', context)
+
+def events(request):
+	events = Event.objects.select_related(
+		).filter(userevent__user_id = request.user.id
+		).order_by('-datetime')
+	context = { 'events': events }
+	return render(request, 'sport/event.html', context)
+
+def regvenues(request):
+	regvenues = Venue.objects.filter(city_id = request.session.get('city_id', 0)
+		).filter(group_id__in = UserGroup.objects.filter(user_id = request.user.id
+			).values_list('group_id', flat=True)
+		).order_by('name')
+	context = { 'regvenues': regvenues }
+	return render(request, 'sport/regvenues.html', context)
+
+def regevent(request):
+	return HttpResponse('')
 
 def logout_view(request):
 	logout(request);
@@ -76,6 +93,13 @@ def register(request):
 			user.set_password(user.password)
 			user.save()
 			registered = True
+
+			#добавление группы по умолчанию "Общая"
+			common_group_id = Group.objects.get(name__iexact='common'
+				).group_id
+			gr = UserGroup(user_id = user.id, group_id = common_group_id)
+			gr.save()
+
 		else:
 			print(user_form.errors)
 	else:

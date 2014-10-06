@@ -52,7 +52,7 @@ class UserEvent(models.Model):
 	status = models.ForeignKey(Status)
 
 	def __str__(self):
-		user = User.objects.filter(id=self.user_id).values('username')[:1][0].get('username', None)
+		user = User.objects.filter(id = self.user_id).values('username')[:1][0].get('username', None)
 		event = Event.objects.filter(event_id = self.event_id).values('name')[:1][0].get('name', None)
 		return  "%s - %s" % (user, event)
 
@@ -77,13 +77,23 @@ class Venue(models.Model):
 	def __str__(self):
 		return self.name
 
+class VenueEvent(models.Model):
+	venue_event_id = models.AutoField(primary_key=True)
+	venue = models.ForeignKey(Venue)
+	event = models.ForeignKey(Event)
+
+	def __str__(self):
+		venue = Venue.objects.filter(venue_id = self.venue_id).values('name')[:1][0].get('name', None)
+		event = Event.objects.filter(event_id = self.event_id).values('name')[:1][0].get('name', None)
+		return  "%s - %s" % (venue, event)
+
 class UserGroup(models.Model):
 	user_group_id = models.AutoField(primary_key=True)
 	user = models.ForeignKey(User)
 	group = models.ForeignKey(Group)
 
 	def __str__(self):
-		user = User.objects.filter(id=self.user_id).values('username')[:1][0].get('username', None)
+		user = User.objects.filter(id = self.user_id).values('username')[:1][0].get('username', None)
 		group = Group.objects.filter(group_id = self.group_id).values('show')[:1][0].get('show', None)
 		return  "%s - %s" % (user, group)
 
