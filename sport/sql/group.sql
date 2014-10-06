@@ -1,1 +1,0 @@
-INSERT INTO sport_group (show, name) VALUES ('Общая', 'Common');
