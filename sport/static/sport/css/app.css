@@ -1,0 +1,31 @@
+html, body {height: 100%;}
+
+#wrap {min-height: 100%;}
+
+#main {overflow:auto;
+	padding-bottom: 40px;}  /* must be same height as the footer */
+
+#footer {position: relative;
+	margin-top: -40px; /* negative value of footer height */
+	height: 40px;
+	clear:both;
+	background: #333333;
+	display: block;
+    width: 100%;
+    color: white;
+    padding: 12px 0 12px 0;
+    padding-left: 15px;
+    font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: normal;
+    text-transform: none;
+} 
+
+/*Opera Fix*/
+body:before {/* thanks to Maleika (Kohoutec)*/
+content:"";
+height:100%;
+float:left;
+width:0;
+margin-top:-32767px;/* thank you Erik J - negate effect of float*/
+}

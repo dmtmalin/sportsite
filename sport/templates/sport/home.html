@@ -1,8 +1,7 @@
 {% extends "sport/base.html" %}
 
 {% block head %}
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>	
-		<script type="text/javascript">		
+	<script type="text/javascript">		
 			$(function(){
 				$.get('/sport/city', { city_id: $("#cities").val() } );
 
@@ -14,19 +13,18 @@
 {% endblock %}
 
 {% block content %}
-	<div style="top:10; left:10;">
+	<div>
 		<select id="cities">
 		{% for city in cities %}
 		{% if city.city_id == city_id  %}
 			<option selected="selected" value="{{ city.city_id }}">{{ city.name }}</option>
 		{% else %}
 			<option value="{{ city.city_id }}">{{ city.name }}</option>
-		{% endif %}		
+		{% endif %}
 		{% endfor %}
 		</select>
 	</div>
 {% for sport in sports %}
 	<h5><a href="map?sport_id={{ sport.sport_id}}">{{ sport.show }}</a></h5>
-	<hr/>
 {% endfor %}
 {% endblock %}

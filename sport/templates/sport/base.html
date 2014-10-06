@@ -2,67 +2,46 @@
 <html>
 <head>
 	<title>Sport</title>
-	<style type="text/css">		
-		#topbar {
-			background-color: #888;
-			height: 40px;
-			width: 100%; 
 
-		}
-		#bottombar {
-			background-color: #888;
-			height: 40px;
-			width: 100%;
-		}
+	{% load staticfiles %}
 
-		#content {
-			width: 400px;
-			margin: auto;
-		}
+	<link rel="stylesheet" type="text/css" href="{% static "sport/css/normalize.css" %}">
+  	<link rel="stylesheet" type="text/css" href="{% static "sport/css/foundation.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "sport/css/app.css" %}">
 
-		.top-nav {
-			list-style-type: none;
-			padding: 0px;
-			margin: 0px;
-			padding-top: 10px;
-		}
-		
-		.top-nav li {
-			display: inline;
-			padding-left: 14px;
-		}
+	<script src="{% static "sport/js/vendor/jquery.js" %}"></script>
+	<script src="{% static "sport/js/vendor/modernizr.js" %}"></script>
 
-		.right {
-			float: right;
-		}
-
-		.top-nav .left {
-			float: left;
-		}
-
-	</style>		
 	{% block head %}{% endblock %}
 </head>
 <body>
-	<div id="topbar">
-		{% if user.is_authenticated %}
-			<ul class="top-nav right">
-				<li>Welcome, {{ user.username }}. <a href="/sport/logout_view">Log out.</a></li>
-			</ul>
-			<ul class="top-nav left">
-				<li><a href="/sport/events">My event</a></li>
-				<li><a href="/sport/regvenues">Registration event</a></li>
-			</ul>
-		{% else %}
-			<ul class="top-nav right">
-				<li>Welcome, new user. Please <a href="/sport/login">log in</a>.</li>
-			</ul>
-		{% endif %}
+	<div id="wrap">
+		<nav class="top-bar">
+			{% if user.is_authenticated %}
+				<section class="top-bar-section">
+					<ul class="right">
+						<li><a href="#">Welcome, {{ user.username }}. </a></li>
+						<li><a href="/sport/logout_view">Log out.</a></li>
+					</ul>
+					
+					<ul class="left">
+						<li><a href="/sport/events">My event</a></li>
+						<li><a href="/sport/regvenues">Registration event</a></li>
+					</ul>
+				</section>
+			{% else %}
+				<section class="top-bar-section">
+					<ul class="right">
+						<li><a href="/sport/login">Log in</a></li>
+					</ul>
+				</section>
+			{% endif %}
+		</nav>
+		<div id="main">
+		{% block content %}{% endblock %}
+		</div>
 	</div>
-	<div id="content">
-	{% block content %}{% endblock %}
-	</div>	
-	<div id="bottombar">
+	<div id="footer">
 		All rights reserved &copy; <b>Sport</b>
 	</div>
 </body>
