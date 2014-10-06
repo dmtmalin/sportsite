@@ -1,0 +1,19 @@
+
+<div style="position:absolute; top:0; right:0;">
+	{% if user.is_authenticated %}
+		<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Выйти.</a></p>
+	{% else %}
+		<p>Welcome, new user. Please <a href="/sport/login">log in</a>.</p>
+	{% endif %}
+</div>
+<h1>Main Page</h1>
+<div>
+<p>
+<a href="/sport/sport"> Спорт </a>
+</p>
+</div>
+<div>
+<p>
+<a href="/sport/types"> типы </a>
+</p>
+</div>
