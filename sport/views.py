@@ -4,10 +4,39 @@ from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import logout, authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from sport.forms import UserForm
+from sport.models import City, Sport, Venue
 
 # Create your views here.
 def home(request):
-	return render(request, 'home.html');
+	sports = Sport.objects.all(
+		).values('sport_id', 'show'
+		).order_by('-show')
+
+	cities = City.objects.all(
+		).values('city_id', 'name'
+		).order_by('-name')
+
+	city_id = request.session.get('city_id', 0)
+	if city_id == '':
+		city_id = '0'	
+	context = { 'sports': sports, 'cities': cities,  'city_id': city_id }
+	return render(request, 'home.html', context);
+
+def city(request):
+	request.session['city_id'] = request.GET.get('city_id', 0) 
+	return HttpResponse('')
+
+def map(request):	
+	city = City.objects.filter(city_id = request.session.get('city_id', 0)
+		).values('latitude', 'longitude')[:1]
+
+	venues = Venue.objects.select_related(
+		).filter(city_id = request.session.get('city_id', 0)
+		).filter(sport_id = request.GET.get('sport_id', 0)
+		).values('venue_id', 'name', 'latitude', 'longitude')
+	
+	context = { 'city': city[0], 'venues': venues }	
+	return render(request, 'sport/map.html', context)
 
 def logout_view(request):
 	logout(request);
