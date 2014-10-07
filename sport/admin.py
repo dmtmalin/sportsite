@@ -1,8 +1,7 @@
 from django.contrib import admin
-from sport.models import City, Venue, Type, UsersGroup
+from sport.models import Event, Mode, Status
 
-admin.site.register(City)
-admin.site.register(Type)
-admin.site.register(UsersGroup)
-admin.site.register(Venue)
 # Register your models here.
+admin.site.register(Event)
+admin.site.register(Mode)
+admin.site.register(Status)
