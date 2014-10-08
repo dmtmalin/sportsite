@@ -21,7 +21,7 @@ def home(request):
 	if city_id == '':
 		city_id = '0'	
 	context = { 'sports': sports, 'cities': cities,  'city_id': int(city_id) }
-	return render(request, 'home.html', context);
+	return render(request, 'sport/home.html', context);
 
 def city(request):
 	request.session['city_id'] = request.GET.get('city_id', 0) 
@@ -133,7 +133,7 @@ def login_view(request):
 			print("Invalid login details:{0}, {1}", username, password)
 			return HttpResponse("Invalid login details supplied")
 	else:
-		return render_to_response('login.html', {}, context)
+		return render_to_response('sport/login.html', {}, context)
 
 def register(request):
 	context = RequestContext(request)
@@ -159,4 +159,4 @@ def register(request):
 	else:
 		user_form = UserForm()
 
-	return render_to_response('register.html', {'user_form': user_form, 'registered': registered}, context)
+	return render_to_response('sport/register.html', {'user_form': user_form, 'registered': registered}, context)

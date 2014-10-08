@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sport</title>
+
+	{% load staticfiles %}
+
+	<link rel="stylesheet" type="text/css" href="{% static "sport/css/normalize.css" %}">
+  	<link rel="stylesheet" type="text/css" href="{% static "sport/css/foundation.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "sport/css/app.css" %}">
+
+	<script src="{% static "sport/js/vendor/jquery.js" %}"></script>
+	<script src="{% static "sport/js/vendor/modernizr.js" %}"></script>
+
+	{% block head %}{% endblock %}
+</head>
+<body>
+	<div id="wrap">
+		<nav class="top-bar">
+			{% if user.is_authenticated %}
+				<section class="top-bar-section">
+					<ul class="right">
+						<li><a href="#">Welcome, {{ user.username }}. </a></li>
+						<li><a href="/sport/logout_view">Log out.</a></li>
+					</ul>
+					
+					<ul class="left">
+						<li><a href="/sport/events">My event</a></li>
+						<li><a href="/sport/regvenues">Registration event</a></li>
+					</ul>
+				</section>
+			{% else %}
+				<section class="top-bar-section">
+					<ul class="right">
+						<li><a href="/sport/login">Log in</a></li>
+					</ul>
+				</section>
+			{% endif %}
+		</nav>
+		<div id="main">
+		{% block content %}{% endblock %}
+		</div>
+	</div>
+	<div id="footer">
+		All rights reserved &copy; <b>Sport</b>
+	</div>
+</body>
+</html>
