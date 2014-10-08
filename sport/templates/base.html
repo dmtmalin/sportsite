@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Sport</title>		
+	<title>Sport</title>
+	<style type="text/css">		
+		#topbar {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 1; }
+	</style>		
 	{% block head %}{% endblock %}
 </head>
 <body>
-	<div style="position:absolute; top:0; right:0;">
+	<div id="topbar">
 		{% if user.is_authenticated %}
-			<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Выйти.</a></p>
+			<p><a href="/sport/events">My event</a></p>
+			<p><a href="/sport/regvenues">Registration event</a></p>
+			<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Log out.</a></p>
 		{% else %}
 			<p>Welcome, new user. Please <a href="/sport/login">log in</a>.</p>
 		{% endif %}
