@@ -1,8 +1,35 @@
 {% extends "sport/base.html" %}
 
+{% block head %}
+
+{% load staticfiles %}
+<script type="text/javascript" src="{% static "jquery-simple-datetimepicker-1.12.0/jquery.simple-dtpicker.js" %}"></script>
+<link type="text/css" href="{% static "jquery-simple-datetimepicker-1.12.0/jquery.simple-dtpicker.css" %}" rel="stylesheet" />
+<!---->
+
+{% endblock %}
+
 {% block content %}
-{% for regvenue in regvenues %}
-	<h5><a href="regevent?venue_id={{ regvenue.venue_id}}">{{ regvenue.name }}</a></h5>
-	<hr/>
-{% endfor %}
+
+{% if registered %}
+<strong> Thank you for registering</strong>
+<a href="/sport">Return to homepage</a> <br/>
+{% else %}
+<form id="register_form" method="post" action="register" enctype="multipart/form-data"> 
+	{% csrf_token %}
+
+	{{ register_form.as_p }}
+
+	<input type="submit" name="submit" value="Register"/>
+</form>
+<script type="text/javascript">
+		$(function(){
+			$('*[id=id_datetime]').appendDtpicker({
+				"futureOnly": true,
+				"dateFormat":"YYYY-MM-DD hh:mm"
+			});
+		});
+</script>
+{% endif %}
+
 {% endblock %}

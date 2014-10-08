@@ -90,7 +90,7 @@ def venues_register(request):
 		request.session['venue_id'] = request.GET.get('venue_id', 0)
 		register_form = EventregForm()
 
-	return render_to_response('sport/register.html', { 'register_form': register_form, 'registered': registered }, context)
+	return render_to_response('sport/regvenues.html', { 'register_form': register_form, 'registered': registered }, context)
 
 def map_events(request):	
 	events = Event.objects.select_related(
