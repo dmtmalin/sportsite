@@ -90,7 +90,7 @@ def venues_register(request):
 		request.session['venue_id'] = request.GET.get('venue_id', 0)
 		register_form = EventregForm()
 
-	return render_to_response('sport/regvenues.html', { 'register_form': register_form, 'registered': registered }, context)
+	return render_to_response('sport/venuesregister.html', { 'register_form': register_form, 'registered': registered }, context)
 
 def map_events(request):	
 	events = Event.objects.select_related(
@@ -101,14 +101,35 @@ def map_events(request):
 	context =  { 'events' : events }
 	return render(request, 'sport/mapevents.html', context)
 
-#def map_register():
-#	event = Event.objects.get(event_id = request.GET.get('event_id', 0))
+def map_register(request):	
+	v_event_id = request.GET.get('event_id', 0)
 
-#	if event.status.name == 'Active'
+	v_status_id = 0
+	status_name = ''
 
-#	u_ev = UserEvent(
-#		user_id = request.user.id,
-#		event_id = )
+	if UserEvent.objects.filter(user_id = request.user.id).filter(event_id = v_event_id).exists():
+		status_name = 'exists'
+	else:
+		event = Event.objects.get(event_id = v_event_id)
+
+		if event.mode.name == 'Public':
+			status_name = 'active'
+			v_status_id = Status.objects.get(name__iexact='active'
+					).status_id
+		else:
+			status_name = 'wait'
+			v_status_id = Status.objects.get(name__iexact='wait'
+					).status_id
+
+		u_ev = UserEvent(
+			user_id = request.user.id,
+			event_id = v_event_id,
+			status_id = v_status_id)
+		u_ev.save()
+
+	context = { 'status': status_name }
+
+	return render(request, 'sport/mapregister.html', context)
 
 def logout_view(request):
 	logout(request);
