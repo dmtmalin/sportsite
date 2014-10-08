@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-
-{% block content %}
-{% for regvenue in regvenues %}
-	<h5><a href="regevent?venue_id={{ regvenue.venue_id}}">{{ regvenue.name }}</a></h5>
-	<hr/>
-{% endfor %}
-{% endblock %}

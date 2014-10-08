@@ -1,10 +1,11 @@
+from datetime import datetime
 from django.shortcuts import render
 from django.template import RequestContext
 from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import logout, authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
-from sport.forms import UserForm
-from sport.models import City, Sport, Venue, UserEvent, Event, UserGroup, Group
+from sport.forms import UserForm, EventregForm
+from sport.models import City, Sport, Venue, UserEvent, Event, UserGroup, Group, Status, VenueEvent
 
 # Create your views here.
 def home(request):
@@ -42,18 +43,72 @@ def events(request):
 		).filter(userevent__user_id = request.user.id
 		).order_by('-datetime')
 	context = { 'events': events }
-	return render(request, 'sport/event.html', context)
+	return render(request, 'sport/events.html', context)
 
-def regvenues(request):
-	regvenues = Venue.objects.filter(city_id = request.session.get('city_id', 0)
+def venues(request):
+	venues = Venue.objects.filter(city_id = request.session.get('city_id', 0)
 		).filter(group_id__in = UserGroup.objects.filter(user_id = request.user.id
 			).values_list('group_id', flat=True)
 		).order_by('name')
-	context = { 'regvenues': regvenues }
-	return render(request, 'sport/regvenues.html', context)
+	context = { 'venues': venues }
+	return render(request, 'sport/venues.html', context)
 
-def regevent(request):
-	return HttpResponse('')
+def venues_register(request):
+	context = RequestContext(request)
+
+	registered = False	
+
+	if request.method == 'POST':
+		register_form = EventregForm(data=request.POST)
+
+		if register_form.is_valid():
+			active_status_id = Status.objects.get(name__iexact='active'
+				).status_id
+			ev = Event(
+				root_user_id = request.user.id,
+				mode_id = register_form.data['mode'],
+				status_id = active_status_id,
+				name = register_form.cleaned_data['name'],
+				datetime = register_form.cleaned_data['datetime'])			
+			ev.save()
+
+			v_ev = VenueEvent(
+				venue_id = request.session.get('venue_id', 0),
+				event_id = ev.event_id)	
+			v_ev.save()	
+
+			u_ev = UserEvent(
+				user_id = request.user.id,
+				event_id = ev.event_id,
+				status_id = active_status_id)
+			u_ev.save()
+
+			registered = True
+		else:
+			print(register_form.errors)
+	else:
+		request.session['venue_id'] = request.GET.get('venue_id', 0)
+		register_form = EventregForm()
+
+	return render_to_response('sport/register.html', { 'register_form': register_form, 'registered': registered }, context)
+
+def map_events(request):	
+	events = Event.objects.select_related(
+		).filter(venueevent__venue_id = request.GET.get('venue_id', 0)
+		).filter(status__name__iexact = 'active'
+		).filter(datetime__gt = datetime.today()
+		).order_by('-datetime')
+	context =  { 'events' : events }
+	return render(request, 'sport/mapevents.html', context)
+
+#def map_register():
+#	event = Event.objects.get(event_id = request.GET.get('event_id', 0))
+
+#	if event.status.name == 'Active'
+
+#	u_ev = UserEvent(
+#		user_id = request.user.id,
+#		event_id = )
 
 def logout_view(request):
 	logout(request);
@@ -99,7 +154,6 @@ def register(request):
 				).group_id
 			gr = UserGroup(user_id = user.id, group_id = common_group_id)
 			gr.save()
-
 		else:
 			print(user_form.errors)
 	else:

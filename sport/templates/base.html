@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Sport</title>
-	<style type="text/css">		
-		#topbar {
-			position: absolute;
-			top: 0;
-			right: 0;
-			z-index: 1; }
-	</style>		
-	{% block head %}{% endblock %}
+<title>Sport</title>
+<style type="text/css">		
+	#topbar {
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 1; }
+</style>	
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>	
+{% block head %}{% endblock %}
 </head>
 <body>
-	<div id="topbar">
-		{% if user.is_authenticated %}
-			<p><a href="/sport/events">My event</a></p>
-			<p><a href="/sport/regvenues">Registration event</a></p>
-			<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Log out.</a></p>
-		{% else %}
-			<p>Welcome, new user. Please <a href="/sport/login">log in</a>.</p>
-		{% endif %}
-	</div>	
-	{% block content %}{% endblock %}
+<div id="topbar">
+	{% if user.is_authenticated %}
+		<p><a href="/sport/events">My event</a></p>
+		<p><a href="/sport/venues">Registration event</a></p>
+		<p>Welcome, {{ user.username }}. <a href="/sport/logout_view">Log out.</a></p>
+	{% else %}
+		<p>Welcome, new user. Please <a href="/sport/login">log in</a>.</p>
+	{% endif %}
+</div>	
+{% block content %}{% endblock %}
 </body>
 </html>

@@ -2,51 +2,44 @@
 
 {% block head %}
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	<style type="text/css">		
-		#googlemap { 
-			height: 100%; 
-			width: 100%;
-			position: absolute;
-			top: 0;
-			left: 0; }
-	</style>
-	<script	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyChLA-Urhp5xABUN-mh10ki4NkAnk7BLIE&sensor=false"></script>	
-	<script src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/src/markerwithlabel.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	<script type="text/javascript">
-		var map;
-		$(document).ready(function() {
-			var mapOptions = {
-				center: new google.maps.LatLng({{ city.latitude }}, {{ city.longitude }}),
-				zoom: 14,
-				mapTypeId: google.maps.MapTypeId.ROADMAP
-			};		
-			map = new google.maps.Map(document.getElementById("googlemap"),
-				mapOptions);
-			{% for venue in venues %}
-			var latlng = new google.maps.LatLng({{ venue.latitude }}, {{ venue.longitude }});						
-			var marker = new MarkerWithLabel({
-				position: latlng,
-				map: map,
-				labelContent: "{{ venue.name }}",
-				id: {{ venue.venue_id }}
-			});	
-			google.maps.event.addListener(marker, 'click', events);
-			{% endfor %}							
-			
+<style type="text/css">		
+	#googlemap { 
+		height: 100%; 
+		width: 100%;
+		position: absolute;
+		top: 0;
+		left: 0; }
+</style>
+<script	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyChLA-Urhp5xABUN-mh10ki4NkAnk7BLIE&sensor=false"></script>	
+<script src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/src/markerwithlabel.js"></script>	
+<script type="text/javascript">
+	var map;
+	$(document).ready(function() {
+		var mapOptions = {
+			center: new google.maps.LatLng({{ city.latitude }}, {{ city.longitude }}),
+			zoom: 14,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		};		
+		map = new google.maps.Map(document.getElementById("googlemap"),
+			mapOptions);
+		{% for venue in venues %}
+		var latlng = new google.maps.LatLng({{ venue.latitude }}, {{ venue.longitude }});						
+		var marker = new MarkerWithLabel({
+			position: latlng,
+			map: map,
+			labelContent: "{{ venue.name }}",
+			id: {{ venue.venue_id }}
 		});	
-		function events(event) {
-			/*$.get('/sport/events', { venue_id: this.id },
-			function(data){
-				for(var i = 0; i < data.length; i++){
-					console.log(data[i].name);
-				};
-			});*/			
-			console.log(this.id);
-		}		
-	</script>
+		google.maps.event.addListener(marker, 'click', events);
+		{% endfor %}							
+	});	
+	function events(event) {
+		//$.get('events', { venue_id: this.id }, function(data) { console.log(data) });
+		window.location = 'events?venue_id=' + this.id;		
+	}		
+</script>
 {% endblock %}
 
 {% block content %}
-	<div id="googlemap"></div>	
+<div id="googlemap"></div>	
 {% endblock %}
