@@ -1,0 +1,6 @@
+.gitignore~
+*.pyc
+*.orig
+sport/__pycache__/*.pyc
+sportsite/__pycache__/
+sport/migrations/__pycache__/

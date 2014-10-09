@@ -2,29 +2,65 @@
 
 {% block head %}
 	<script type="text/javascript">		
-			$(function(){
-				$.get('/sport/city', { city_id: $("#cities").val() } );
-
-				$("#cities").on("change", function(){
-					$.get('/sport/city', { city_id: this.value } );
+		$(document).ready(function() {
+			$('#cities').change(function(){
+				var str = $(this).parent().serialize();
+				console.log(str);
+				$.ajax({
+					type: "post",
+					data: str,
+					success: function(resp) {
+						var sports = $.parseJSON(resp);
+						for (var i = 0; i < sports.length; i++) {
+							var event_list = "event_list_"+sports[i]["sport_id"];
+							var event_html = "<ul id='"+event_list+"'>";
+							for (var j = 0; j < sports[i]["events"].length; j++) {
+								event_html += "<li>"+sports[i]["events"][j]["event_name"]+"</li>";
+							}
+							event_html += "</ul>";
+							console.log(event_html);
+							var ul_event_list = $('#'+event_list);
+							console.log(ul_event_list);
+							ul_event_list.replaceWith(event_html);
+						}						
+					},
+					error: function(resp) {
+						console.log("error");
+					},
 				});
 			});
+		});
 	</script>
 {% endblock %}
 
 {% block content %}
 	<div>
-		<select id="cities">
-		{% for city in cities %}
-		{% if city.city_id == city_id  %}
-			<option selected="selected" value="{{ city.city_id }}">{{ city.name }}</option>
-		{% else %}
-			<option value="{{ city.city_id }}">{{ city.name }}</option>
-		{% endif %}
-		{% endfor %}
-		</select>
+		<form action="/" method="post">
+			{% csrf_token %}
+			<select id="cities" name="city_id">
+			{% for city in cities %}
+			{% if city.city_id == city_id  %}
+				<option selected="selected" value="{{ city.city_id }}">{{ city.name }}</option>
+			{% else %}
+				<option value="{{ city.city_id }}">{{ city.name }}</option>
+			{% endif %}
+			{% endfor %}
+			</select>
+		</form>
 	</div>
+	
 {% for sport in sports %}
-	<h5><a href="map?sport_id={{ sport.sport_id}}">{{ sport.show }}</a></h5>
+	<div class="columns">
+		<h5><a href="map?sport_id={{ sport.sport_id}}">{{ sport.show }}</a></h5>
+		<div id="event"> 
+		<ul id="event_list_{{sport.sport_id}}" data-role="listview">
+		{% for event in sport.events  %}
+			<li>{{event.event_name}}</li>
+		{% endfor %}
+		</ul>
+		</div>
+	</div>
+	
 {% endfor %}
+	</div>
 {% endblock %}

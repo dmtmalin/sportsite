@@ -1,14 +1,20 @@
 from datetime import datetime
-from django.shortcuts import render
 from django.template import RequestContext
 from django.shortcuts import render, redirect, render_to_response
+from django.views import generic
 from django.contrib.auth import logout, authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from sport.forms import UserForm, EventregForm
 from sport.models import City, Sport, Venue, UserEvent, Event, UserGroup, Group, Status, VenueEvent
 
+import json
+
 # Create your views here.
 def home(request):
+	city_id = request.session.get('city_id', 0)
+	if city_id == '':
+		city_id = '0'	
+	
 	sports = Sport.objects.all(
 		).values('sport_id', 'show'
 		).order_by('show')
@@ -17,11 +23,44 @@ def home(request):
 		).values('city_id', 'name'
 		).order_by('name')
 
-	city_id = request.session.get('city_id', 0)
-	if city_id == '':
-		city_id = '0'	
-	context = { 'sports': sports, 'cities': cities,  'city_id': int(city_id) }
-	return render(request, 'sport/home.html', context);
+	if request.method == 'POST':
+		if request.is_ajax():
+			city_id = request.POST["city_id"]
+			request.session["city_id"] = city_id
+			resp = []
+			for sport in sports:
+				resp_events = []
+				events = Event.objects.filter(
+					venueevent__venue__city_id=city_id,
+					venueevent__venue__sport_id=sport["sport_id"]
+					)
+				for event in events:
+					resp_events.append({
+						"event_id" : event.event_id,
+						"event_name" : event.name,
+						})
+				resp.append({
+					"sport_id" : sport["sport_id"],
+					"events" : resp_events,
+					})
+			return HttpResponse(json.dumps(resp))
+		else:
+			return HttpResponse("")
+	else:		
+		for sport in sports:
+			resp_events = []
+			events = Event.objects.filter(
+				venueevent__venue__city_id=city_id,
+				venueevent__venue__sport_id=sport["sport_id"]
+				)
+			for event in events:
+				resp_events.append({
+					"event_id" : event.event_id,
+					"event_name" : event.name,
+					})
+			sport["events"]=resp_events
+		context = { 'sports': sports, 'cities': cities,  'city_id': int(city_id) }
+		return render(request, 'sport/home.html', context);
 
 def city(request):
 	request.session['city_id'] = request.GET.get('city_id', 0) 

@@ -1,11 +1,21 @@
 html, body {height: 100%;}
 
-#wrap {min-height: 100%;}
+#wrap {
+	min-height: 100%;	
+	min-width: 600px;
+	//width: 80%;
+}
 
-#main {overflow:auto;
-	padding-bottom: 40px;}  /* must be same height as the footer */
 
-#footer {position: relative;
+#content {
+	overflow:auto;
+	padding-bottom: 40px;/* must be same height as the footer */	
+	width: 600px;
+	margin: auto;
+}  
+
+footer {
+	position: relative;
 	margin-top: -40px; /* negative value of footer height */
 	height: 40px;
 	clear:both;
@@ -28,4 +38,12 @@ height:100%;
 float:left;
 width:0;
 margin-top:-32767px;/* thank you Erik J - negate effect of float*/
+}
+
+#event {
+	display: none;
+}
+
+.columns:hover > #event {
+	display: block;
 }
