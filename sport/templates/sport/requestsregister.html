@@ -1,0 +1,23 @@
+{% extends "sport/base.html" %}
+
+{% block head %}
+<script>
+	function Accept(user_id) {
+		console.log('Accept' + user_id);
+	}
+	function Decline(user_id) {
+		console.log('Decline' + user_id);
+	}
+</script>
+{% endblock %}
+
+{% block content %}
+{% for user in users %}
+<li>
+	{{ user.username }}
+</li>
+<input type="button" onclick="Accept({{ user.id }})" value="Accept" />
+<input type="button" onclick="Decline({{ user.id }})" value="Decline" />
+
+{% endfor %}
+{% endblock %}

@@ -12,5 +12,7 @@ urlpatterns = patterns('',
     url(r'^map/register', views.map_register, name='map_register'),
     url(r'^events/$', views.events, name='events'),
     url(r'^venues/$', views.venues, name='venues'),
-    url(r'^venues/register', views.venues_register, name='venues_register')        
+    url(r'^venues/register', views.venues_register, name='venues_register'),
+    url(r'^requests/$', views.requests, name='requests'),
+    url(r'^requests/register', views.requests_register, name='requests_register')   
 )

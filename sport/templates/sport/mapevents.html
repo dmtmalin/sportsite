@@ -3,7 +3,7 @@
 {% block content %}
 
 {% for event in events %}
-	<h5><a href="register?event_id={{ event.event_id}}">{{ event.name }}</a></h5>
+	<h5><a href="register?event_id={{ event.event_id}}">{{ event.datetime }} - {{ event.name }}</a></h5>
 	<hr/>
 {% endfor %}
 
