@@ -5,7 +5,7 @@ from django.views import generic
 from django.contrib.auth import logout, authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from sport.forms import UserForm, EventregForm
-from sport.models import City, Sport, Venue, UserEvent, Event, UserGroup, Group, Status, VenueEvent
+from sport.models import City, Sport, Venue, UserEvent, Event, UserGroup, Group, Status, VenueEvent, User
 
 import json
 
@@ -14,7 +14,7 @@ def home(request):
 	city_id = request.session.get('city_id', 0)
 	if city_id == '':
 		city_id = '0'	
-	
+	request.session["city_id"] = city_id
 	sports = Sport.objects.all(
 		).values('sport_id', 'show'
 		).order_by('show')
@@ -141,6 +141,9 @@ def map_events(request):
 	return render(request, 'sport/mapevents.html', context)
 
 def map_register(request):	
+	if not request.user.is_authenticated():
+		return redirect ('/sport/login')
+
 	v_event_id = request.GET.get('event_id', 0)
 
 	v_status_id = 0
@@ -169,6 +172,23 @@ def map_register(request):
 	context = { 'status': status_name }
 
 	return render(request, 'sport/mapregister.html', context)
+
+def requests(request):
+	events = Event.objects.select_related(
+		).filter(root_user_id = request.user.id
+		).filter(userevent__status__name__iexact = 'wait'
+		).order_by('event_id', '-datetime'
+		).distinct('event_id')
+	context = { 'events': events }
+	return render(request, 'sport/requests.html', context)
+
+def requests_register(request):
+	users = User.objects.filter(userevent__event_id = request.GET.get('event_id', 0)
+			).filter(userevent__status__name__iexact = 'wait'
+			).values('id', 'username'
+			).order_by('username')	
+	context = { 'users': users }
+	return render(request, 'sport/requestsregister.html', context)
 
 def logout_view(request):
 	logout(request);

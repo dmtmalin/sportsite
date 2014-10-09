@@ -6,7 +6,6 @@
 
 {% if registered %}
 <strong> Thank you for registering</strong>
-<a href="/sport">Return to homepage</a> <br/>
 {% else %}
 <form id="user_form" method="post" action="/sport/register/" enctype="multipart/form-data"> 
 	{% csrf_token %}
