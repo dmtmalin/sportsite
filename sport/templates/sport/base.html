@@ -15,7 +15,7 @@
 	{% block head %}{% endblock %}
 </head>
 <body>
-	<div id="wrap">
+	<div id="header_container">
 		<nav class="top-bar">
 			{% if user.is_authenticated %}
 				<section class="top-bar-section">
@@ -38,13 +38,18 @@
 				</section>
 			{% endif %}
 		</nav>
-		<div id="content">
-		{% block content %}{% endblock %}		
-		</div>
-		<a href="/sport">Return to homepage</a> <br/>
 	</div>
-	<footer>
-		All rights reserved &copy; <b>Sport</b>
-	</footer>
+	<div id="container">
+		{% block content %}{% endblock %}		
+	</div>
+	<div id="footer_container">
+		<nav class="top-bar">
+			<section class="top-bar-section">
+				<ul class="right">
+					<li><a>All rights reserved &copy; <b>Sport</b></a></li>
+				</ul>
+			</section>
+		</nav>
+	</div>
 </body>
 </html>
