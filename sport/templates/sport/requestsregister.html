@@ -1,23 +1,52 @@
 {% extends "sport/base.html" %}
 
 {% block head %}
-<script>
-	function Accept(user_id) {
-		console.log('Accept' + user_id);
-	}
-	function Decline(user_id) {
-		console.log('Decline' + user_id);
-	}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.button').click(function(){
+			var btn = $(this);
+			if (btn.is('.disabled')) return;
+			var str = { 'csrfmiddlewaretoken' : '{{ csrf_token }}'}
+			if (btn.is('.accept')){
+				str['accept'] = 1;
+			} else {
+				str['accept'] = 0;
+			}
+			var user_id = $(this).attr('id');
+			str['user_id'] = user_id;
+			$.ajax({
+				type: "post",
+				data: str,
+				success: function(resp) {
+					//$(this).addClass('disabled');
+					if (btn.is('.accept')) {
+						btn.addClass('disabled');
+						btn.parent().children('.decline').removeClass('disabled');
+					} else {
+						btn.addClass('disabled');
+						btn.parent().children('.accept').removeClass('disabled');
+					}
+				},
+				error: function(resp) {
+					console.log("error");
+				},
+			});
+		});
+	});
+	
 </script>
 {% endblock %}
 
 {% block content %}
 {% for user in users %}
-<li>
-	{{ user.username }}
-</li>
-<div role="button" onclick="Accept({{ user.id }})" class="button tiny">Accept</div>
-<div role="button" onclick="Decline({{ user.id }})" class="button tiny">Decline</div>
-
+<ul class="small-block-grid-3">
+	<li>{{ user.username }}</li>
+	<li>
+		<div role="button" id="{{ user.id }}" class="accept button tiny {% if user.name == 'Active' %}disabled{% endif %}">Accept</div>
+	</li>
+	<li>
+		<div role="button" id="{{ user.id }}" class="decline button tiny {% if user.name == 'Cancel' %}disabled{% endif %}">Decline</div>
+	</li>
+</ul>
 {% endfor %}
 {% endblock %}

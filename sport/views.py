@@ -183,12 +183,29 @@ def requests(request):
 	return render(request, 'sport/requests.html', context)
 
 def requests_register(request):
-	users = User.objects.filter(userevent__event_id = request.GET.get('event_id', 0)
-			).filter(userevent__status__name__iexact = 'wait'
-			).values('id', 'username'
-			).order_by('username')	
-	context = { 'users': users }
-	return render(request, 'sport/requestsregister.html', context)
+	if (request.method == 'POST'):
+		acc = request.POST['accept']
+		if acc == '1':
+			status = Status.objects.get(name__iexact='Active')
+		else:
+			status = Status.objects.get(name__iexact='Cancel')
+		sport_id=request.GET['event_id']
+		user_id=request.POST['user_id']
+		userevent = UserEvent.objects.get(event_id=sport_id,user_id=user_id)
+		userevent.status=status
+		userevent.save()
+		return HttpResponse("ok")
+	else:
+		users = User.objects.values('id','username','userevent__status__name').raw(' \
+			SELECT "auth_user"."id", "auth_user"."username", "sport_status"."name" \
+			FROM "auth_user" INNER JOIN	"sport_userevent" \
+			ON ( "sport_userevent"."user_id" = "auth_user"."id" ) INNER JOIN "sport_status" \
+			ON ( "sport_status"."status_id" = "sport_userevent"."status_id" ) INNER JOIN "sport_event" \
+			ON ( "sport_event"."event_id" = "sport_userevent"."event_id" AND \
+				"auth_user"."id" <> "sport_event"."root_user_id") \
+			WHERE "sport_userevent"."event_id" = %s', [request.GET["event_id"]])
+		context = { 'users': users }
+		return render(request, 'sport/requestsregister.html', context)
 
 def logout_view(request):
 	logout(request);
