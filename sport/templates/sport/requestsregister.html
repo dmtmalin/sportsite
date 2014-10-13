@@ -16,8 +16,8 @@
 <li>
 	{{ user.username }}
 </li>
-<input type="button" onclick="Accept({{ user.id }})" value="Accept" />
-<input type="button" onclick="Decline({{ user.id }})" value="Decline" />
+<div role="button" onclick="Accept({{ user.id }})" class="button tiny">Accept</div>
+<div role="button" onclick="Decline({{ user.id }})" class="button tiny">Decline</div>
 
 {% endfor %}
 {% endblock %}

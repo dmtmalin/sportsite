@@ -11,9 +11,9 @@ import json
 
 # Create your views here.
 def home(request):
-	city_id = request.session.get('city_id', 0)
+	city_id = request.session.get('city_id', 1)
 	if city_id == '':
-		city_id = '0'	
+		city_id = '1'	
 	request.session["city_id"] = city_id
 	sports = Sport.objects.all(
 		).values('sport_id', 'show'
@@ -22,7 +22,7 @@ def home(request):
 	cities = City.objects.all(
 		).values('city_id', 'name'
 		).order_by('name')
-
+	print(city_id)
 	if request.method == 'POST':
 		if request.is_ajax():
 			city_id = request.POST["city_id"]
