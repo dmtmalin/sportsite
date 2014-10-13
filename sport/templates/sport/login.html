@@ -1,5 +1,18 @@
 {% extends "sport/base.html" %}
 
+{% block head %}
+	<!--script type="text/javascript">
+	$(document).ready(function(){
+		$('.login').click(function(){
+			$(this).parent().submit();
+		});
+		$('.register').click(function(){
+			$.get("/sport/register/");
+		});
+	});
+	</script-->
+{% endblock head %}
+
 {% block content %}
 
 <h1>Login Page</h1>
@@ -10,8 +23,7 @@ Username: <input type="text" name="username" value="" size="50"/>
 <br />
 Password: <input type="password" name="password" value="" size="50"/>
 <br />
-<input type="submit" value="submit" />
+<div role="button" class="button login" onclick="document.forms['login_form'].submit();">Ok</div>
+<div role="button" class="button register" onclick="location.href='/sport/register/'">Register</div>
 </form>
-
-<a href="/sport/register/">Register</a>
 {% endblock %}
