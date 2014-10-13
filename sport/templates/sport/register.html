@@ -1,18 +1,25 @@
 {% extends "sport/base.html" %}
 
+{% block head %}
+	{% if registered %}
+		<meta http-equiv="refresh" content="10;url=/sport/">	
+	{% endif %}
+{% endblock head %}
+
 {% block content %}
 
-<h1>Register</h1>
+<h1>Регистрация</h1>
 
 {% if registered %}
-<strong> Thank you for registering</strong>
+<strong>Спасибо за регистрацию</strong>
+<h5>Вы будите перенаправлену на <a href="/sport/">главную</a> страницу в течении 10 секунд...</h5>
 {% else %}
 <form id="user_form" method="post" action="/sport/register/" enctype="multipart/form-data"> 
 	{% csrf_token %}
 
 	{{ user_form.as_p }}
 
-	<div role="button" class="button login" onclick="document.forms['user_form'].submit();">Ok</div>
+	<div role="button" class="button login" onclick="document.forms['user_form'].submit();">Готово</div>
 </form>
 {% endif %}
 
