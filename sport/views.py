@@ -85,6 +85,8 @@ def map(request):
 		else:
 			return HttpResponse("")
 	else:
+		request.session['sport_id'] = request.GET.get('sport_id', 0)
+
 		city = City.objects.filter(city_id = request.session.get('city_id', 0)
 			).values('latitude', 'longitude')[:1]
 
@@ -149,15 +151,6 @@ def venues_register(request):
 
 	return render_to_response('sport/venuesregister.html', { 'register_form': register_form, 'registered': registered }, context)
 
-def map_events(request):	
-	events = Event.objects.select_related(
-		).filter(venueevent__venue_id = request.GET.get('venue_id', 0)
-		).filter(status__name__iexact = 'active'
-		).filter(datetime__gt = datetime.today()
-		).order_by('-datetime')
-	context =  { 'events' : events }
-	return render(request, 'sport/mapevents.html', context)
-
 def map_register(request):	
 	if not request.user.is_authenticated():
 		return redirect ('/sport/login')
@@ -187,7 +180,7 @@ def map_register(request):
 			status_id = v_status_id)
 		u_ev.save()
 
-	context = { 'status': status_name }
+	context = { 'status': status_name, 'sport_id': request.session.get('sport_id', 0) }
 
 	return render(request, 'sport/mapregister.html', context)
 

@@ -9,6 +9,7 @@
 		position: absolute;
 		top: 45px;
 		right: 0px;
+		z-index: 0;
 	}
 </style>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
@@ -69,19 +70,36 @@
 					type: "post",
 					data: { venue_id: this.id },
 					success: function(resp) {
-						console.log(resp)							
+						var events = $.parseJSON(resp);						
+						var event_ul = "<ul id=\"list\" class=\"square\">";		
+						if(events.length == 0) {
+							event_ul += "<li>Events does not exist</li></ul>"	
+						}	
+						else
+						{
+							for (var i = 0; i < events.length; i++) {
+								var event_li = "<li><a href=\"register?event_id=" +
+							 						events[i]["event_id"] +"\">" +							 					
+							 						events[i]["name"];							 					
+								var event_h6 = "<h6 class=\"subheader\">" + 
+													events[i]["datetime"] +
+													"</h6></a></li>";
+								event_ul += (event_li + event_h6);
+							}
+						}									
+						
+						event_ul += "</ul>";												
+						$('#list').replaceWith(event_ul);
 					},
 					error: function(resp) {
 						console.log("error");
 					},
-				});
-		//$.get('events', { venue_id: this.id }, function(data) { console.log(data) });
-		//window.location = 'events?venue_id=' + this.id;		
+				});		
 	}		
 </script>
 {% endblock %}
 
 {% block content %}
+<ul id="list" class="square"></ul>
 <div id="googlemap"></div>
-<li>Hello</li>
 {% endblock %}
