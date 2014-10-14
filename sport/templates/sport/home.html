@@ -15,7 +15,7 @@
 							var event_list = "event_list_"+sports[i]["sport_id"];
 							var event_html = "<ul id='"+event_list+"'>";
 							for (var j = 0; j < sports[i]["events"].length; j++) {
-								event_html += "<li>"+sports[i]["events"][j]["event_name"]+"</li>";
+								event_html += "<li><a href='map/register?event_id="+sports[i]["events"][j]["event_id"]+"'>"+sports[i]["events"][j]["event_name"]+"</a></li>";
 							}
 							event_html += "</ul>";
 							console.log(event_html);
@@ -55,7 +55,7 @@
 		<div id="event"> 
 		<ul id="event_list_{{sport.sport_id}}" data-role="listview">
 		{% for event in sport.events  %}
-			<li>{{event.event_name}}</li>
+			<li><a href="map/register?event_id={{ event.event_id }}">{{event.event_name}}</a></li>
 		{% endfor %}
 		</ul>
 		</div>
