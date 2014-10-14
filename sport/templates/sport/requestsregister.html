@@ -5,14 +5,18 @@
 	$(document).ready(function(){
 		$('.button').click(function(){
 			var btn = $(this);
+			var user_id = btn.attr('id');
+
 			if (btn.is('.disabled')) return;
 			var str = { 'csrfmiddlewaretoken' : '{{ csrf_token }}'}
 			if (btn.is('.accept')){
+				var btn2 = $('#'+user_id+'.decline');
 				str['accept'] = 1;
 			} else {
+				var btn2 = $('#'+user_id+'.accept');
 				str['accept'] = 0;
 			}
-			var user_id = $(this).attr('id');
+			
 			str['user_id'] = user_id;
 			$.ajax({
 				type: "post",
@@ -21,10 +25,10 @@
 					//$(this).addClass('disabled');
 					if (btn.is('.accept')) {
 						btn.addClass('disabled');
-						btn.parent().children('.decline').removeClass('disabled');
+						btn2.removeClass('disabled');
 					} else {
 						btn.addClass('disabled');
-						btn.parent().children('.accept').removeClass('disabled');
+						btn2.removeClass('disabled');
 					}
 				},
 				error: function(resp) {
