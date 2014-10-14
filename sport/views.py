@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.template import RequestContext
 from django.shortcuts import render, redirect, render_to_response
 from django.views import generic
@@ -67,15 +67,33 @@ def city(request):
 	return HttpResponse('')
 
 def map(request):	
-	city = City.objects.filter(city_id = request.session.get('city_id', 0)
-		).values('latitude', 'longitude')[:1]
+	if request.method == 'POST':
+		if request.is_ajax():				
+			events = Event.objects.select_related(
+				).filter(venueevent__venue_id = request.POST["venue_id"]
+				).filter(status__name__iexact = 'active'
+				).filter(datetime__gt = timezone.now()
+				).order_by('-datetime')
+			resp = []
+			for event in events:
+				resp.append({
+					"event_id": event.event_id,
+					"name": event.name,
+					"datetime": event.datetime.strftime("%Y-%m-%d %H:%M:%S")
+					})			
+			return HttpResponse(json.dumps(resp))
+		else:
+			return HttpResponse("")
+	else:
+		city = City.objects.filter(city_id = request.session.get('city_id', 0)
+			).values('latitude', 'longitude')[:1]
 
-	venues = Venue.objects.filter(city_id = request.session.get('city_id', 0)
-		).filter(sport_id = request.GET.get('sport_id', 0)
-		).values('venue_id', 'name', 'latitude', 'longitude')
-	
-	context = { 'city': city[0], 'venues': venues }	
-	return render(request, 'sport/map.html', context)
+		venues = Venue.objects.filter(city_id = request.session.get('city_id', 0)
+			).filter(sport_id = request.GET.get('sport_id', 0)
+			).values('venue_id', 'name', 'latitude', 'longitude')
+
+		context = { 'city': city[0], 'venues': venues }
+		return render(request, 'sport/map.html', context)
 
 def events(request):
 	events = Event.objects.select_related(

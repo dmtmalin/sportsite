@@ -5,13 +5,44 @@
 <style type="text/css">		
 	#googlemap { 
 		height: 100%; 
-		width: 100%;
+		width: 80%;
 		position: absolute;
-		top: 0;
-		left: 0; }
+		top: 45px;
+		right: 0px;
+	}
 </style>
-<script	src="http://maps.googleapis.com/maps/api/js?key=AIzaSyChLA-Urhp5xABUN-mh10ki4NkAnk7BLIE&sensor=false"></script>	
-<script src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/src/markerwithlabel.js"></script>	
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/src/markerwithlabel.js"></script>
+<script type="text/javascript">
+	// using jQuery
+	function getCookie(name) {
+		var cookieValue = null;
+			if (document.cookie && document.cookie != '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+		beforeSend: function(xhr, settings) {
+			if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		}
+	});
+</script>
 <script type="text/javascript">
 	var map;
 	$(document).ready(function() {
@@ -19,7 +50,7 @@
 			center: new google.maps.LatLng({{ city.latitude }}, {{ city.longitude }}),
 			zoom: 14,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
-		};		
+		};
 		map = new google.maps.Map(document.getElementById("googlemap"),
 			mapOptions);
 		{% for venue in venues %}
@@ -28,18 +59,29 @@
 			position: latlng,
 			map: map,
 			labelContent: "{{ venue.name }}",
-			id: {{ venue.venue_id }}
+			id: {{ venue.venue_id }},			
 		});	
 		google.maps.event.addListener(marker, 'click', events);
 		{% endfor %}							
 	});	
-	function events(event) {
+	function events(event) {	
+		$.ajax({
+					type: "post",
+					data: { venue_id: this.id },
+					success: function(resp) {
+						console.log(resp)							
+					},
+					error: function(resp) {
+						console.log("error");
+					},
+				});
 		//$.get('events', { venue_id: this.id }, function(data) { console.log(data) });
-		window.location = 'events?venue_id=' + this.id;		
+		//window.location = 'events?venue_id=' + this.id;		
 	}		
 </script>
 {% endblock %}
 
 {% block content %}
-<div id="googlemap"></div>	
+<div id="googlemap"></div>
+<li>Hello</li>
 {% endblock %}
