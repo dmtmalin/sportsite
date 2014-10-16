@@ -1,21 +1,22 @@
 {% extends "sport/base.html" %}
 {% block content %}
-<table>
-	<tr>
-		<td>date_time</td>
-		<td>name</td>
-		<td>root_user</td>
-		<td>mode</td>
-		<td>status</td>
-	</tr>
-	{% for event in events %}
-	<tr>
-		<td>{{ event.datetime }}</td>
-		<td>{{ event.name }}</td>
-		<td>{{ event.root_user.username }}</td>
-		<td>{{ event.mode.show }}</td>
-		<td>{{ event.status.show }}</td>
-	</tr>
-	{% endfor %}
-</table>
+
+{% if not userevents %}
+	<h5>You do not have events</h5>
+{% else %}
+{% for ue in userevents %}
+<div class="columns">
+	<h5>{{ ue.event.name }}</h5>
+	<div id="event">		
+		<ul data-role="listview">
+			<h6 class="subheader">datetime: {{ ue.event.datetime }}</h6>
+			<h6 class="subheader">root: {{ ue.event.root_user.username }}</h6>
+			<h6 class="subheader">mode: {{ ue.event.mode.show }}</h6>
+			<h6 class="subheader">you status: {{ ue.status.show }}</h6>
+		</ul>
+	</div>
+</div>
+{% endfor %}	
+{% endif %}
+
 {% endblock %}

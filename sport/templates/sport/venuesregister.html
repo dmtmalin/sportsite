@@ -18,8 +18,8 @@
 	{% csrf_token %}
 
 	{{ register_form.as_p }}
-
-	<input type="submit" name="submit" value="Register"/>
+	
+	<div role="button" class="button" onclick="document.forms['register_form'].submit();">Register</div>
 </form>
 <script type="text/javascript">
 		$(function(){

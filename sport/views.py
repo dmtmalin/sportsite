@@ -21,8 +21,7 @@ def home(request):
 
 	cities = City.objects.all(
 		).values('city_id', 'name'
-		).order_by('name')
-	print(city_id)
+		).order_by('name')	
 	if request.method == 'POST':
 		if request.is_ajax():
 			city_id = request.POST["city_id"]
@@ -85,8 +84,6 @@ def map(request):
 		else:
 			return HttpResponse("")
 	else:
-		request.session['sport_id'] = request.GET.get('sport_id', 0)
-
 		city = City.objects.filter(city_id = request.session.get('city_id', 0)
 			).values('latitude', 'longitude')[:1]
 
@@ -98,10 +95,10 @@ def map(request):
 		return render(request, 'sport/map.html', context)
 
 def events(request):
-	events = Event.objects.select_related(
-		).filter(userevent__user_id = request.user.id
-		).order_by('-datetime')
-	context = { 'events': events }
+	userevents = UserEvent.objects.select_related(
+		).filter(user_id = request.user.id
+		).order_by('-event__datetime')	
+	context = { 'userevents': userevents }
 	return render(request, 'sport/events.html', context)
 
 def venues(request):
@@ -180,7 +177,7 @@ def map_register(request):
 			status_id = v_status_id)
 		u_ev.save()
 
-	context = { 'status': status_name, 'sport_id': request.session.get('sport_id', 0) }
+	context = { 'status': status_name }
 
 	return render(request, 'sport/mapregister.html', context)
 
